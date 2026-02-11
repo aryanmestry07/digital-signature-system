@@ -40,7 +40,7 @@ function Dashboard() {
           />
         )}
 
-        <PdfPreview pdfUrl={selectedPDF} />
+        <PdfPreview  pdfUrl={selectedPDF?.url} docId={selectedPDF?.id} />
       </div>
     </>
   );

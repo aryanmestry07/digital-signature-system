@@ -8,7 +8,7 @@ function DocumentList({ documents, onPreview }) {
       {documents.map((doc) => (
         <div key={doc.id}>
           <span>{doc.name}</span>
-          <button onClick={() => onPreview(doc.url)}>
+      <button onClick={() => onPreview(doc)}>
             Preview
           </button>
         </div>
