@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 import os
 import shutil
 from typing import List
+from app.models.signing_token import SigningToken
+import uuid
+from app.core.email import send_email
 
 from app.db.database import get_db
 from app.core.auth import get_current_user
@@ -78,3 +81,46 @@ def get_user_documents(
         }
         for doc in documents
     ]
+
+
+
+@router.post("/generate-link/{doc_id}")
+def generate_public_link(
+    doc_id: int,
+    email: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    document = db.query(Document).filter(
+        Document.id == doc_id,
+        Document.uploaded_by == current_user.id
+    ).first()
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found or unauthorized")
+
+    token = SigningToken(
+        document_id=doc_id,
+        email=email
+    )
+
+    db.add(token)
+    db.commit()
+    db.refresh(token)
+
+    public_link = f"http://localhost:3000/public-sign/{token.token}"
+
+    # Optional: Email sending (can test later)
+    try:
+        send_email(
+            email,
+            "Document Signing Request",
+            f"Click this link to sign: {public_link}"
+        )
+    except:
+        pass  # avoid breaking API if email not configured yet
+
+    return {
+        "message": "Public signing link generated",
+        "link": public_link
+    }

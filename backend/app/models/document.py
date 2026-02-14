@@ -11,3 +11,5 @@ class Document(Base):
     uploaded_by = Column(Integer, ForeignKey("users.id"))
     status = Column(String, default="uploaded")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    signed_file_path = Column(String, nullable=True)
+
