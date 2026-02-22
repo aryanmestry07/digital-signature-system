@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/signatures", tags=["Signatures"])
 
 
 # =============================
-# Schemas
+# Schema
 # =============================
 
 class ConfirmSignRequest(BaseModel):
@@ -24,10 +24,7 @@ class ConfirmSignRequest(BaseModel):
     x: float
     y: float
     page: int
-    render_width: float
-    render_height: float
-
-
+    width_ratio: float
 # =============================
 # Upload Signature
 # =============================
@@ -73,7 +70,7 @@ def upload_signature(
 
 
 # =============================
-# Confirm & Sign (FIXED ALIGNMENT)
+# Confirm & Sign (FINAL CORRECT VERSION)
 # =============================
 
 @router.post("/confirm-sign")
@@ -91,9 +88,6 @@ def confirm_sign(
     if not user.signature_image_path:
         raise HTTPException(status_code=400, detail="Upload signature first")
 
-    if not os.path.exists(user.signature_image_path):
-        raise HTTPException(status_code=400, detail="Signature file missing")
-
     original_pdf_path = document.file_path
     signed_pdf_path = f"uploads/signed_{document.id}.pdf"
 
@@ -103,27 +97,34 @@ def confirm_sign(
     page_width = page.rect.width
     page_height = page.rect.height
 
-    # Convert from rendered canvas pixels → PDF coordinates
-    x = (data.x / data.render_width) * page_width
-    y = (data.y / data.render_height) * page_height
+    # ============================
+    # Convert Relative → Absolute
+    # ============================
 
-    width = 150
-    height = 60
+    abs_x = data.x * page_width
+    abs_y = data.y * page_height
 
-    # Flip Y-axis (browser top-left → PDF bottom-left)
-    y = page_height - y
+    # ============================
+    # Size Scaling
+    # ============================
 
-    # Center-based rectangle (matches frontend translate(-50%, -50%))
+    width = data.width_ratio * page_width
+    aspect_ratio = 60 / 150
+    height = width * aspect_ratio
+
+    # ============================
+    # Center-Based Placement
+    # ============================
+
     rect = fitz.Rect(
-        x - width / 2,
-        y - height / 2,
-        x + width / 2,
-        y + height / 2
+        abs_x - width / 2,
+        abs_y - height / 2,
+        abs_x + width / 2,
+        abs_y + height / 2
     )
 
     page.insert_image(rect, filename=user.signature_image_path)
 
-    os.makedirs("uploads", exist_ok=True)
     pdf.save(signed_pdf_path)
     pdf.close()
 
