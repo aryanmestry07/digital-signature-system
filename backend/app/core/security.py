@@ -11,6 +11,8 @@ def _normalize_password(password: str) -> str:
 
 def hash_password(password: str) -> str:
     normalized = _normalize_password(password)
+    print("Original length:", len(password))
+    print("Normalized length:", len(normalized))
     return pwd_context.hash(normalized)
 
 def verify_password(password: str, hashed: str) -> bool:
