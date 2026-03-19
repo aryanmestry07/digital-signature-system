@@ -5,7 +5,7 @@ function UploadZone({ onUploadSuccess }) {
   const [isUploading, setIsUploading] = useState(false);
 
   const inputRef = useRef(null);
-  const uploadLock = useRef(false);   // 🔥 hard lock
+  const uploadLock = useRef(false);   //  hard lock
 
   const handleFileUpload = async (file) => {
     if (!file) return;

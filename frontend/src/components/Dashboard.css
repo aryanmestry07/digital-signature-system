@@ -1,4 +1,4 @@
-/* Main dashboard container */
+
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -6,15 +6,15 @@
 
 /* Dashboard title */
 .dashboard-title {
-  color: #1f2937; /* dark gray */
+  color: #1f2937; 
 }
 
 /* Optional: Smooth background for whole dashboard */
 body {
-  background-color: #f9fafb; /* light gray background */
+  background-color: #f9fafb; 
 }
 
-/* Optional: Improve scroll behavior */
+
 html {
   scroll-behavior: smooth;
 }

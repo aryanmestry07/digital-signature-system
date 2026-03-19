@@ -71,7 +71,6 @@ function PdfPreview() {
 
   const handleDragOver = (e) => e.preventDefault();
 
-  // --- Final Confirmation Logic ---
   const handleConfirm = async () => {
     if (!placedPosition) return alert("Drag signature onto document first");
 
